@@ -10,18 +10,30 @@ export default function SignUpScreen() {
   const router = useRouter();
   const { register } = useAuth();
   const [nickname, setNickname] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [gender, setGender] = useState<'male' | 'female' | 'other'>('male');
   const [age, setAge] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSignUp = async () => {
-    if (!nickname || !age) {
+    if (!nickname || !password || !confirmPassword || !age) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
     if (nickname.length < 3 || nickname.length > 20) {
       Alert.alert('Error', 'Nickname must be between 3 and 20 characters');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters long');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
       return;
     }
 
@@ -34,6 +46,7 @@ export default function SignUpScreen() {
       setLoading(true);
       await register({
         nickname: nickname.toLowerCase(),
+        password,
         gender,
         age: parseInt(age),
         isFirstTime: true,
@@ -55,8 +68,8 @@ export default function SignUpScreen() {
 
       <View style={styles.form}>
         <Text style={styles.disclaimer}>
-          Tāriņī does not collect your personal email or password. Please create a unique nickname
-          that will be used to identify you. If you provide relevant demographics or occupation
+          Tāriņī does not collect your personal email or phone number. Please create a unique nickname
+          and password that will be used to identify you. If you provide relevant demographics or occupation
           information, that might improve the assessment and personalization of meditations.
         </Text>
 
@@ -70,6 +83,22 @@ export default function SignUpScreen() {
         <Text style={styles.nicknameHint}>
           This nickname will be used to login. Make sure it's memorable!
         </Text>
+
+        <Input
+          label="Password *"
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Enter password (min 6 characters)"
+          secureTextEntry
+        />
+
+        <Input
+          label="Confirm Password *"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          placeholder="Re-enter your password"
+          secureTextEntry
+        />
 
         <Text style={styles.label}>Gender *</Text>
         <View style={styles.genderContainer}>
@@ -98,6 +127,15 @@ export default function SignUpScreen() {
         />
 
         <Button title="Create Account" onPress={handleSignUp} loading={loading} />
+
+        <TouchableOpacity 
+          style={styles.signinLink} 
+          onPress={() => router.replace('/(auth)/signin')}
+        >
+          <Text style={styles.signinText}>
+            Already have an account? <Text style={styles.signinTextBold}>Sign In</Text>
+          </Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -173,5 +211,17 @@ const styles = StyleSheet.create({
   },
   genderButtonTextSelected: {
     color: Colors.white,
+  },
+  signinLink: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  signinText: {
+    fontSize: 14,
+    color: Colors.text,
+  },
+  signinTextBold: {
+    fontWeight: 'bold',
+    color: Colors.secondary,
   },
 });

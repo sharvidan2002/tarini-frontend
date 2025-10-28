@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Button } from '../../components/Button';
+import { Dropdown } from '../../components/Dropdown';
 import { useAuth } from '../../context/AuthContext';
 import { Colors } from '../../constants/Colors';
 
@@ -12,12 +13,36 @@ export default function OccupationalScreen() {
   const [experience, setExperience] = useState('');
   const [classSize, setClassSize] = useState('');
   const [yearsInSchool, setYearsInSchool] = useState('');
-  const [teachesOther, setTeachesOther] = useState(false);
+  const [teachesOther, setTeachesOther] = useState('');
 
-  const qualifications = ['Trainee Grad', 'Grad', 'Trained', 'Other'];
-  const experiences = ['<1', 'Early Career 1-3', 'Mid 2-23', 'Late 24-40'];
-  const classSizes = ['<30', '>30'];
-  const schoolYears = ['<7', '>7 years'];
+  const qualificationOptions = [
+    { label: 'Trainee Grad', value: 'trainee_grad' },
+    { label: 'Grad', value: 'grad' },
+    { label: 'Trained', value: 'trained' },
+    { label: 'Other', value: 'other' },
+  ];
+
+  const experienceOptions = [
+    { label: 'Less than 1 year', value: '<1' },
+    { label: 'Early Career (1-3 years)', value: '1-3' },
+    { label: 'Mid Career (2-23 years)', value: '2-23' },
+    { label: 'Late Career (24-40 years)', value: '24-40' },
+  ];
+
+  const classSizeOptions = [
+    { label: 'Less than 30 students', value: '<30' },
+    { label: 'More than 30 students', value: '>30' },
+  ];
+
+  const schoolYearsOptions = [
+    { label: 'Less than 7 years', value: '<7' },
+    { label: 'More than 7 years', value: '>7' },
+  ];
+
+  const yesNoOptions = [
+    { label: 'Yes', value: 'yes' },
+    { label: 'No', value: 'no' },
+  ];
 
   const handleSave = async () => {
     try {
@@ -27,7 +52,7 @@ export default function OccupationalScreen() {
           teachingExperience: experience,
           classSize,
           yearsInCurrentSchool: yearsInSchool,
-          teachesOtherSubjects: teachesOther,
+          teachesOtherSubjects: teachesOther === 'yes',
         },
       });
       router.push('/assessment/bat-questions');
@@ -51,7 +76,7 @@ export default function OccupationalScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.form}>
+      <ScrollView style={styles.form} showsVerticalScrollIndicator={false}>
         <View style={styles.highlightSection}>
           <Text style={styles.sectionTitle}>Occupational Information</Text>
           <Text style={styles.sectionSubtitle}>Cultural / Social Factors</Text>
@@ -68,58 +93,45 @@ export default function OccupationalScreen() {
           </Text>
         </View>
 
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Qualification as a teacher</Text>
-          <Text style={styles.sublabel}>
-            (trainee grad, grad, trained, other) - teaching exp (&lt;1, early carer 1-3, mid 2-23,
-            late 24-40) - how any students in the class &lt;30, &gt;30
-          </Text>
-          <View style={styles.optionsContainer}>
-            {qualifications.map((q) => (
-              <TouchableOpacity
-                key={q}
-                style={[styles.option, qualification === q && styles.optionSelected]}
-                onPress={() => setQualification(q)}
-              >
-                <Text style={styles.optionText}>{q}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+        <Dropdown
+          label="Qualification as a teacher"
+          value={qualification}
+          options={qualificationOptions}
+          onSelect={setQualification}
+          placeholder="Select your qualification"
+        />
 
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Years in the current school</Text>
-          <Text style={styles.sublabel}>&lt;7/&gt;7 yrs</Text>
-          <View style={styles.optionsContainer}>
-            {schoolYears.map((y) => (
-              <TouchableOpacity
-                key={y}
-                style={[styles.option, yearsInSchool === y && styles.optionSelected]}
-                onPress={() => setYearsInSchool(y)}
-              >
-                <Text style={styles.optionText}>{y}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+        <Dropdown
+          label="Teaching Experience"
+          value={experience}
+          options={experienceOptions}
+          onSelect={setExperience}
+          placeholder="Select years of experience"
+        />
 
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Teach any other subject in addition to the main subject</Text>
-          <View style={styles.optionsContainer}>
-            <TouchableOpacity
-              style={[styles.option, teachesOther && styles.optionSelected]}
-              onPress={() => setTeachesOther(true)}
-            >
-              <Text style={styles.optionText}>Yes</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.option, !teachesOther && styles.optionSelected]}
-              onPress={() => setTeachesOther(false)}
-            >
-              <Text style={styles.optionText}>No</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Dropdown
+          label="Class Size"
+          value={classSize}
+          options={classSizeOptions}
+          onSelect={setClassSize}
+          placeholder="Select class size"
+        />
+
+        <Dropdown
+          label="Years in the current school"
+          value={yearsInSchool}
+          options={schoolYearsOptions}
+          onSelect={setYearsInSchool}
+          placeholder="Select duration"
+        />
+
+        <Dropdown
+          label="Teach any other subject in addition to the main subject"
+          value={teachesOther}
+          options={yesNoOptions}
+          onSelect={setTeachesOther}
+          placeholder="Select Yes or No"
+        />
 
         <Button title="Save" onPress={handleSave} />
         <View style={styles.spacer} />
@@ -211,41 +223,6 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 12,
-    color: Colors.text,
-  },
-  fieldContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: Colors.text,
-    marginBottom: 5,
-  },
-  sublabel: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 10,
-  },
-  optionsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  option: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    backgroundColor: Colors.white,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.tertiary,
-  },
-  optionSelected: {
-    backgroundColor: Colors.secondary,
-    borderColor: Colors.secondary,
-  },
-  optionText: {
-    fontSize: 14,
     color: Colors.text,
   },
   spacer: {

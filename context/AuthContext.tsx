@@ -39,9 +39,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const login = async (nickname: string) => {
+  const login = async (nickname: string, password: string) => {
     try {
-      const response = await authAPI.login(nickname);
+      const response = await authAPI.login(nickname, password);
       await SecureStore.setItemAsync('userToken', response.token);
       await SecureStore.setItemAsync('userData', JSON.stringify(response.user));
       setUser(response.user);

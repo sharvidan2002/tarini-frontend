@@ -1,6 +1,7 @@
 export interface User {
   _id?: string;
   nickname: string;
+  password?: string;
   gender: 'male' | 'female' | 'other';
   age: number;
   demographics?: Demographics;
@@ -53,7 +54,7 @@ export interface EmojiRating {
 
 export interface AuthContextType {
   user: User | null;
-  login: (nickname: string) => Promise<void>;
+  login: (nickname: string, password: string) => Promise<void>;
   register: (userData: Partial<User>) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (profileData: Partial<User>) => Promise<void>;

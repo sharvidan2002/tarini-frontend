@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Button } from '../../components/Button';
+import { Dropdown } from '../../components/Dropdown';
 import { Colors } from '../../constants/Colors';
-import { Picker } from '@react-native-picker/picker';
 
 export default function Demographics2Screen() {
   const router = useRouter();
@@ -12,6 +12,28 @@ export default function Demographics2Screen() {
   const [sleepPattern, setSleepPattern] = useState('');
   const [chronicIllness, setChronicIllness] = useState('');
   const [mentalHealth, setMentalHealth] = useState('');
+
+  const maritalOptions = [
+    { label: 'Single', value: 'single' },
+    { label: 'Married', value: 'married' },
+    { label: 'Divorced', value: 'divorced' },
+    { label: 'Widowed', value: 'widowed' },
+  ];
+
+  const sleepHoursOptions = [
+    { label: '7 - 8 hours', value: '7-8' },
+    { label: 'Less than 7 hours', value: '<7' },
+  ];
+
+  const sleepPatternOptions = [
+    { label: 'Sleep well at night', value: 'well' },
+    { label: 'Irregular sleep', value: 'irregular' },
+  ];
+
+  const yesNoOptions = [
+    { label: 'None', value: 'none' },
+    { label: 'Yes', value: 'yes' },
+  ];
 
   const handleSave = () => {
     // Save to context/backend later
@@ -33,94 +55,56 @@ export default function Demographics2Screen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.form}>
+      <ScrollView style={styles.form} showsVerticalScrollIndicator={false}>
         <Text style={styles.sectionTitle}>Demographics Information</Text>
-
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Age</Text>
-          <Text style={styles.description}>Already collected during signup</Text>
-        </View>
 
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Gender</Text>
           <Text style={styles.description}>Already collected during signup</Text>
         </View>
 
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Relationship Status</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={maritalStatus}
-              onValueChange={setMaritalStatus}
-              style={styles.picker}
-            >
-              <Picker.Item label="Select..." value="" />
-              <Picker.Item label="Single" value="single" />
-              <Picker.Item label="Married" value="married" />
-              <Picker.Item label="Divorced" value="divorced" />
-              <Picker.Item label="Widowed" value="widowed" />
-            </Picker>
-          </View>
-        </View>
+        <Dropdown
+          label="Relationship Status"
+          value={maritalStatus}
+          options={maritalOptions}
+          onSelect={setMaritalStatus}
+          placeholder="Select relationship status"
+        />
 
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>How many hours do you sleep</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={sleepHours}
-              onValueChange={setSleepHours}
-              style={styles.picker}
-            >
-              <Picker.Item label="Select..." value="" />
-              <Picker.Item label="7 - 8 hours" value="7-8" />
-              <Picker.Item label="Less than 7 hours" value="<7" />
-            </Picker>
-          </View>
-        </View>
+        <Dropdown
+          label="How many hours do you sleep"
+          value={sleepHours}
+          options={sleepHoursOptions}
+          onSelect={setSleepHours}
+          placeholder="Select sleep hours"
+        />
 
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Sleep Pattern</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={sleepPattern}
-              onValueChange={setSleepPattern}
-              style={styles.picker}
-            >
-              <Picker.Item label="Select..." value="" />
-              <Picker.Item label="Sleep well at night" value="well" />
-              <Picker.Item label="Irregular sleep" value="irregular" />
-            </Picker>
-          </View>
+        <Dropdown
+          label="Sleep Pattern"
+          value={sleepPattern}
+          options={sleepPatternOptions}
+          onSelect={setSleepPattern}
+          placeholder="Select sleep pattern"
+        />
+
+        <View style={styles.highlightField}>
+          <Dropdown
+            label="Chronic Illness"
+            value={chronicIllness}
+            options={yesNoOptions}
+            onSelect={setChronicIllness}
+            placeholder="Select option"
+          />
         </View>
 
         <View style={styles.highlightField}>
-          <Text style={styles.label}>Chronic Illness</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={chronicIllness}
-              onValueChange={setChronicIllness}
-              style={styles.picker}
-            >
-              <Picker.Item label="Select..." value="" />
-              <Picker.Item label="None" value="none" />
-              <Picker.Item label="Yes" value="yes" />
-            </Picker>
-          </View>
-        </View>
-
-        <View style={styles.highlightField}>
-          <Text style={styles.label}>Mental Health Issues</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={mentalHealth}
-              onValueChange={setMentalHealth}
-              style={styles.picker}
-            >
-              <Picker.Item label="Select..." value="" />
-              <Picker.Item label="None" value="none" />
-              <Picker.Item label="Yes" value="yes" />
-            </Picker>
-          </View>
+          <Dropdown
+            label="Mental Health Issues"
+            value={mentalHealth}
+            options={yesNoOptions}
+            onSelect={setMentalHealth}
+            placeholder="Select option"
+          />
         </View>
 
         <Button title="Save" onPress={handleSave} />
@@ -201,7 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFACD',
     padding: 15,
     borderRadius: 8,
-    marginBottom: 20,
+    marginBottom: 15,
   },
   label: {
     fontSize: 14,
@@ -213,15 +197,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
     fontStyle: 'italic',
-  },
-  pickerContainer: {
-    backgroundColor: Colors.white,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.tertiary,
-  },
-  picker: {
-    height: 50,
   },
   spacer: {
     height: 20,

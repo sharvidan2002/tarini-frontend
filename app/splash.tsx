@@ -12,7 +12,7 @@ export default function SplashScreen() {
     const timer = setTimeout(() => {
       if (!loading) {
         if (!user) {
-          router.replace('/language');
+          router.replace('/(auth)/signin');
         } else if (user.isFirstTime) {
           router.replace('/profile/demographics1');
         } else {

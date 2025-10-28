@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
@@ -10,20 +10,21 @@ export default function SignInScreen() {
   const router = useRouter();
   const { login } = useAuth();
   const [nickname, setNickname] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSignIn = async () => {
-    if (!nickname) {
-      Alert.alert('Error', 'Please enter your nickname');
+    if (!nickname || !password) {
+      Alert.alert('Error', 'Please enter your nickname and password');
       return;
     }
 
     try {
       setLoading(true);
-      await login(nickname.toLowerCase());
+      await login(nickname.toLowerCase(), password);
       router.replace('/(tabs)');
     } catch (error: any) {
-      Alert.alert('Error', error.response?.data?.message || 'Nickname not found. Please check and try again.');
+      Alert.alert('Error', error.response?.data?.message || 'Invalid nickname or password. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -38,7 +39,7 @@ export default function SignInScreen() {
 
       <View style={styles.form}>
         <Text style={styles.infoText}>
-          Enter your nickname to continue
+          Enter your credentials to continue
         </Text>
 
         <Input
@@ -48,7 +49,24 @@ export default function SignInScreen() {
           placeholder="Enter your nickname"
         />
 
+        <Input
+          label="Password"
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Enter your password"
+          secureTextEntry
+        />
+
         <Button title="Sign In" onPress={handleSignIn} loading={loading} />
+
+        <TouchableOpacity 
+          style={styles.signupLink} 
+          onPress={() => router.replace('/(auth)/signup')}
+        >
+          <Text style={styles.signupText}>
+            Don't have an account? <Text style={styles.signupTextBold}>Sign Up</Text>
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -82,5 +100,17 @@ const styles = StyleSheet.create({
     color: Colors.text,
     textAlign: 'center',
     marginBottom: 20,
+  },
+  signupLink: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  signupText: {
+    fontSize: 14,
+    color: Colors.text,
+  },
+  signupTextBold: {
+    fontWeight: 'bold',
+    color: Colors.secondary,
   },
 });
