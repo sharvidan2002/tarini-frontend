@@ -31,7 +31,9 @@ export default function Demographics1Screen() {
           style={[styles.tab, activeTab === 'demographic' && styles.activeTab]}
           onPress={() => setActiveTab('demographic')}
         >
-          <Text style={styles.tabText}>Demographics</Text>
+          <Text style={[styles.tabText, activeTab === 'demographic' && styles.activeTabText]}>
+            Demographics
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'occupational' && styles.activeTab]}
@@ -52,22 +54,8 @@ export default function Demographics1Screen() {
         </View>
 
         <Button title="Next" onPress={handleSave} />
+        <View style={styles.spacer} />
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <View style={styles.navItem}>
-          <View style={styles.navIcon} />
-        </View>
-        <View style={styles.navItem}>
-          <View style={styles.navIcon} />
-        </View>
-        <View style={styles.navItem}>
-          <View style={styles.navIcon} />
-        </View>
-        <View style={styles.navItem}>
-          <View style={styles.navIcon} />
-        </View>
-      </View>
     </View>
   );
 }
@@ -120,6 +108,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.text,
   },
+  activeTabText: {
+    color: Colors.white,
+  },
   form: {
     flex: 1,
     paddingHorizontal: 20,
@@ -141,19 +132,7 @@ const styles = StyleSheet.create({
     color: Colors.text,
     textAlign: 'center',
   },
-  bottomNav: {
-    flexDirection: 'row',
-    backgroundColor: Colors.secondary,
-    paddingVertical: 15,
-    justifyContent: 'space-around',
-  },
-  navItem: {
-    alignItems: 'center',
-  },
-  navIcon: {
-    width: 24,
-    height: 24,
-    backgroundColor: Colors.white,
-    borderRadius: 12,
+  spacer: {
+    height: 30,
   },
 });

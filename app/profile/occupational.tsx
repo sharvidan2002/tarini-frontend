@@ -136,21 +136,6 @@ export default function OccupationalScreen() {
         <Button title="Save" onPress={handleSave} />
         <View style={styles.spacer} />
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <View style={styles.navItem}>
-          <View style={styles.navIcon} />
-        </View>
-        <View style={styles.navItem}>
-          <View style={styles.navIcon} />
-        </View>
-        <View style={styles.navItem}>
-          <View style={styles.navIcon} />
-        </View>
-        <View style={styles.navItem}>
-          <View style={styles.navIcon} />
-        </View>
-      </View>
     </View>
   );
 }
@@ -226,21 +211,6 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   spacer: {
-    height: 20,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    backgroundColor: Colors.secondary,
-    paddingVertical: 15,
-    justifyContent: 'space-around',
-  },
-  navItem: {
-    alignItems: 'center',
-  },
-  navIcon: {
-    width: 24,
-    height: 24,
-    backgroundColor: Colors.white,
-    borderRadius: 12,
+    height: 30,
   },
 });

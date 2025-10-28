@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import { Colors } from '../../constants/Colors';
 
 export default function MeditationScreen() {
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   const [scaleAnim] = useState(new Animated.Value(1));
+  const rotationAnim = useRef(new Animated.Value(0)).current;
 
   const exercises = [
     {
@@ -30,34 +31,59 @@ export default function MeditationScreen() {
     },
   ];
 
+  useEffect(() => {
+    if (selectedExercise === 'bee') {
+      // Continuous rotation for the bee
+      Animated.loop(
+        Animated.timing(rotationAnim, {
+          toValue: 1,
+          duration: 8000, // 8 seconds for one complete circle
+          useNativeDriver: true,
+        })
+      ).start();
+    } else if (selectedExercise) {
+      // Breathing animation for flower and candle
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(scaleAnim, {
+            toValue: 1.3,
+            duration: 4000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1,
+            duration: 6000,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    }
+
+    return () => {
+      scaleAnim.setValue(1);
+      rotationAnim.setValue(0);
+    };
+  }, [selectedExercise]);
+
   const startExercise = (exerciseId: string) => {
     setSelectedExercise(exerciseId);
-    
-    // Simple breathing animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 1.3,
-          duration: 4000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 6000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
   };
 
   const stopExercise = () => {
     setSelectedExercise(null);
     scaleAnim.setValue(1);
+    rotationAnim.setValue(0);
   };
 
   if (selectedExercise) {
     const exercise = exercises.find(e => e.id === selectedExercise);
     
+    // Calculate bee position for circular motion
+    const rotation = rotationAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0deg', '360deg'],
+    });
+
     return (
       <View style={styles.exerciseContainer}>
         <View style={styles.exerciseHeader}>
@@ -66,16 +92,42 @@ export default function MeditationScreen() {
         </View>
 
         <View style={styles.animationContainer}>
-          <Animated.View
-            style={[
-              styles.breathingCircle,
-              {
-                transform: [{ scale: scaleAnim }],
-              },
-            ]}
-          >
-            <Text style={styles.breathingEmoji}>{exercise?.emoji}</Text>
-          </Animated.View>
+          {selectedExercise === 'bee' ? (
+            // Fixed circle with rotating bee for "Watch the Bee"
+            <View style={styles.fixedCircleContainer}>
+              <View style={styles.fixedCircle}>
+                <Text style={styles.breathingEmoji}>{exercise?.emoji}</Text>
+              </View>
+              
+              {/* Small bee rotating around the circle */}
+              <Animated.View
+                style={[
+                  styles.orbitingBee,
+                  {
+                    transform: [
+                      { rotate: rotation },
+                      { translateX: 120 }, // Distance from center (radius)
+                      { rotate: rotation }, // Counter-rotate to keep bee upright
+                    ],
+                  },
+                ]}
+              >
+                <Text style={styles.smallBee}>🐝</Text>
+              </Animated.View>
+            </View>
+          ) : (
+            // Breathing animation for flower and candle
+            <Animated.View
+              style={[
+                styles.breathingCircle,
+                {
+                  transform: [{ scale: scaleAnim }],
+                },
+              ]}
+            >
+              <Text style={styles.breathingEmoji}>{exercise?.emoji}</Text>
+            </Animated.View>
+          )}
         </View>
 
         <View style={styles.instructionContainer}>
@@ -83,11 +135,13 @@ export default function MeditationScreen() {
           <Text style={styles.durationText}>{exercise?.duration}</Text>
         </View>
 
-        <View style={styles.breathingGuide}>
-          <Text style={styles.breathingStep}>💨 Breathe In</Text>
-          <Text style={styles.breathingSeparator}>•••</Text>
-          <Text style={styles.breathingStep}>💨 Breathe Out</Text>
-        </View>
+        {selectedExercise !== 'bee' && (
+          <View style={styles.breathingGuide}>
+            <Text style={styles.breathingStep}>💨 Breathe In</Text>
+            <Text style={styles.breathingSeparator}>•••</Text>
+            <Text style={styles.breathingStep}>💨 Breathe Out</Text>
+          </View>
+        )}
 
         <TouchableOpacity style={styles.stopButton} onPress={stopExercise}>
           <Text style={styles.stopButtonText}>Stop Exercise</Text>
@@ -259,6 +313,35 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
+  },
+  fixedCircleContainer: {
+    width: 240,
+    height: 240,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fixedCircle: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: Colors.tertiary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: Colors.secondary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  orbitingBee: {
+    position: 'absolute',
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  smallBee: {
+    fontSize: 32,
   },
   breathingEmoji: {
     fontSize: 80,
