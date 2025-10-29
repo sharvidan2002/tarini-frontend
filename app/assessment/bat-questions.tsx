@@ -43,6 +43,24 @@ export default function BATQuestionsScreen() {
     }
   };
 
+  const handleQuit = () => {
+    Alert.alert(
+      'Quit Assessment?',
+      'Your progress will not be saved. You can take the assessment later from the BAT tab.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Quit',
+          style: 'destructive',
+          onPress: () => router.replace('/(tabs)'),
+        },
+      ]
+    );
+  };
+
   const handleSubmit = async () => {
     if (responses.some(r => r === 0)) {
       Alert.alert('Incomplete', 'Please answer all questions before submitting');
@@ -66,7 +84,15 @@ export default function BATQuestionsScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Burnout Assessment</Text>
+        <View style={styles.headerTop}>
+          <Text style={styles.title}>Burnout Assessment</Text>
+          <TouchableOpacity 
+            style={styles.quitButton}
+            onPress={handleQuit}
+          >
+            <Text style={styles.quitButtonText}>Quit</Text>
+          </TouchableOpacity>
+        </View>
         <ProgressBar current={currentQuestion + 1} total={BATQuestions.length} />
       </View>
 
@@ -123,11 +149,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: Colors.primary,
-    marginBottom: 15,
+  },
+  quitButton: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  quitButtonText: {
+    color: Colors.white,
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   content: {
     flex: 1,
